@@ -1,5 +1,5 @@
 
-// UI 
+
 document.querySelector('#ewallet-form').addEventListener('submit', function (e) {
     e.preventDefault();
     console.log('submitted!');
@@ -13,6 +13,35 @@ document.querySelector('#ewallet-form').addEventListener('submit', function (e) 
         resetForm();
     }
 });
+
+// ***********************************************************
+// **** UI ***************************************************
+// ***********************************************************
+
+showItems();
+
+function showItems(){
+  let items = getItemsFromLS();
+  const collection = document.querySelector('.collection');
+  for(const item of items){
+    const newHtml = `
+    <div class="item">
+          <div class="item-description-time">
+            <div class="item-description">
+              <p>${item.desc}</p>
+            </div>
+            <div class="item-time">
+              <p>${item.time}</p>
+            </div>
+          </div>
+          <div class="item-amount ${item.type === '+' ? 'income-amount' : 'expense-amount'}">
+            <p>${item.type}$${item.value}</p>
+          </div>
+        </div>
+    `;
+    collection.insertAdjacentHTML('afterbegin', newHtml);
+  }
+}
 
 function addItems(type, desc, value) {
     const time = getFormattedTime();
@@ -30,10 +59,12 @@ function addItems(type, desc, value) {
             <p>${type}$${value}</p>
           </div>
         </div>
-    `
+    `;
     console.log(newHtml);
     const collection = document.querySelector('.collection');
     collection.insertAdjacentHTML('afterbegin', newHtml);
+
+    addTimesToLS(desc, time, type, value);
 }
 
 function resetForm() {
@@ -42,7 +73,27 @@ function resetForm() {
     document.querySelector('.add__value').value = '';
 }
 
-// Utility Functions 
+function getItemsFromLS(){
+  let items = localStorage.getItem('items');
+  if(items){
+    items = JSON.parse(items);
+  } else {
+    items = [];
+  }
+
+  return items;
+}
+
+function addTimesToLS(desc, time, type, value){
+  const items = getItemsFromLS();
+  items.push({desc, time, type, value});
+
+  localStorage.setItem('items', JSON.stringify(items));
+}
+
+// *************************************************************************
+// **** Utility Functions **************************************************
+// ************************************************************************* 
 function getFormattedTime() {
     const now = new Date().toLocaleTimeString('en-us', {
         month: 'short',
