@@ -17,6 +17,33 @@ document.querySelector('#ewallet-form').
 // *************************************************
 // ********* UI ************************************
 // *************************************************
+showItems();
+
+function showItems() {
+  let items = getItemsFromLS();
+  const collection = document.querySelector('.collection');
+
+  for (let item of items) {
+    const newHtml = `
+    <div class="item">
+    <div class="item-description-time">
+      <div class="item-description">
+        <p>${item.desc}</p>
+      </div>
+      <div class="item-time">
+        <p>${item.timeFormated}</p>
+      </div>
+    </div>
+    <div class="item-amount ${item.type === '+' ? 'income-amount' : 'expense-amount'}">
+      <p>${item.type}$${item.value}</p>
+    </div>
+  </div>
+    `;
+    collection.insertAdjacentHTML('afterbegin', newHtml);
+  }
+}
+
+
 function addItems(type, desc, value) {
   const timeFormated = getFormattedTime();
   const collection = document.querySelector('.collection');
@@ -36,12 +63,33 @@ function addItems(type, desc, value) {
   </div>
     `;
   collection.insertAdjacentHTML('afterbegin', newHtml);
+  addItemsToLS(type, desc, value, timeFormated);
 }
 
 function resetForm() {
   document.querySelector('.add__type').value = '+';
   document.querySelector('.add__description').value = '';
   document.querySelector('.add__value').value = '';
+}
+
+// Storing Data to Local Storage
+function getItemsFromLS() {
+  let items = localStorage.getItem('items');
+
+  if (items) {
+    items = JSON.parse(items)
+  } else {
+    items = []
+  }
+
+  return items;
+}
+
+function addItemsToLS(type, desc, value, timeFormated) {
+  const items = getItemsFromLS();
+
+  items.push({ type, desc, value, timeFormated })
+  localStorage.setItem('items', JSON.stringify(items));
 }
 
 // ************************************************
@@ -58,7 +106,6 @@ function getFormattedTime() {
   const reversMonth = currentMonth.split(' ')[0];
   const reversMonthDay = currentMonth.split(' ')[1];
   const expectedMonthFormate = `${reversMonthDay} ${reversMonth}`;
-  console.log(expectedMonthFormate);
 
   // getting current time
   const time = now.toLocaleTimeString();
@@ -66,9 +113,6 @@ function getFormattedTime() {
   const minutes = time.split(' ')[0].split(':')[1];
   const AMorPM = time.split(' ')[1];
   const expectedTimeFormate = `${hours.length < 2 ? `0${hours}` : `${hours}`}:${minutes.length < 2 ? `0${minutes}` : `${minutes}`} ${AMorPM}`;
-  console.log(expectedTimeFormate);
-  
+
   return (`${expectedMonthFormate}, ${expectedTimeFormate}`);
 } 
-const result = getFormattedTime();
-console.log(result);
