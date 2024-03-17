@@ -136,6 +136,11 @@ function showTotalBalance(){
     }
   }
   document.querySelector('.balance__amount p').innerText = balance;
+  if(balance >= 0){
+    document.querySelector('header').className = 'green';
+  } else {
+    document.querySelector('header').className = 'red';
+  }
 }
 
 // ************************************************
