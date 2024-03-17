@@ -67,6 +67,7 @@ function addItems(type, desc, value) {
 
   showTotalIncome();
   showTotalExpense();
+  showTotalBalance();
 }
 
 function resetForm() {
@@ -120,6 +121,21 @@ function showTotalExpense() {
     }
   }
   document.querySelector('.expense__amount p').innerText = `$${totalExpense}`;
+}
+
+showTotalBalance();
+function showTotalBalance(){
+  const items = getItemsFromLS();
+  let balance = 0;
+
+  for(let item of items){
+    if(item.type === '+'){
+      balance += parseInt(item.value);
+    } else {
+      balance -= parseInt(item.value);
+    }
+  }
+  document.querySelector('.balance__amount p').innerText = balance;
 }
 
 // ************************************************
